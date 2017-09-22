@@ -1,6 +1,6 @@
 
-
-
+database : cool
+table : profile
 CREATE TABLE `profile` (
   `userid` int(11) DEFAULT NULL,
   `basic` tinyint(4) DEFAULT NULL,
@@ -25,3 +25,12 @@ CREATE TABLE `profile` (
   `level` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
 
+table : user
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `contact` int(10) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 
