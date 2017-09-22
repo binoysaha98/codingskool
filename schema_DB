@@ -1,0 +1,37 @@
+database : cool
+
+table : profile
+CREATE TABLE `profile` (
+  `userid` int(11) DEFAULT NULL,
+  `basic` tinyint(4) DEFAULT NULL,
+  `typing` int(3) DEFAULT NULL,
+  `competitive` int(3) DEFAULT NULL,
+  `apti` int(2) DEFAULT NULL,
+  `sorting` tinyint(4) DEFAULT NULL,
+  `indent` tinyint(4) DEFAULT NULL,
+  `shooting` tinyint(4) DEFAULT NULL,
+  `cne` tinyint(4) DEFAULT NULL,
+  `dbms` tinyint(4) DEFAULT NULL,
+  `tree` tinyint(4) DEFAULT NULL,
+  `oop` tinyint(4) DEFAULT NULL,
+  `app` int(11) DEFAULT NULL,
+  `linuxb` tinyint(4) DEFAULT NULL,
+  `github` tinyint(4) DEFAULT NULL,
+  `sincere` tinyint(4) DEFAULT NULL,
+  `security` tinyint(4) DEFAULT NULL,
+  `cloud` tinyint(4) DEFAULT NULL,
+  `linuxp` tinyint(4) DEFAULT NULL,
+  `manrating` int(11) DEFAULT NULL,
+  `level` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+
+
+table : user
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `contact` int(10) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 
