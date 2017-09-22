@@ -17,8 +17,14 @@ body{
 	min-height:700px;
 	margin-bottom:120px;
 }
+.invalid {
+    border: 1px solid red;
+}
+.invalid:focus {
+    border: 1px solid red;
+}
 #first-footer{
-	position:fixed;
+	position:relative;
 	bottom:0px;
 	left:0px;
 	right:0px;
@@ -90,7 +96,7 @@ if((isset($_POST['btn_login'])))
        ?>
        <script>
            window.alert("Successful");
-           window.location.href="index.php";
+           window.location.href="profile.php";
        </script>
        <?php
    }
@@ -157,7 +163,7 @@ if((isset($_POST['btn_signup'])))
                    <label>Name</label><br>
                    <input id="si-fn" name="s-fname" class="form-control" placeholder="Name" type="text" required onkeyup="unValidate(this)" maxlength="15"><br><br>
                    <label>Email</label><br>
-                   <input id="si-em" name="s-email" class="form-control" placeholder="Email" type="email" required maxlength="50">
+                   <input id="si-em" name="s-email" class="form-control" placeholder="Email" type="email" required onblur="checkemail()" onkeyup ="ajaxcalltimer()" maxlength="50">
                    <span id="ems"></span><br><br>
                    <label>Phone No</label><br>
                    <input id="si-ph" name="s-phno" class="form-control" placeholder="Phone No" type="text" onkeyup="phoneValidate()" required maxlength="10"><br><br>
@@ -213,90 +219,151 @@ if((isset($_POST['btn_signup'])))
            }
        }
        </script>
+  <script>
+      var cm;
+      var ajaxCallTimeoutID = null;
+
+      function unValidate(un)
+      {
+          var unval = un.value;
+          if(/^[a-z''A-Z]+$/.test(unval) && unval.indexOf(" ")!=unval.length-1 && unval.indexOf(" ")!=0 && unval.length>1)
+          {
+              un.className="form-control";
+              return true;
+          }
+          else
+          {
+              un.className="form-control invalid";
+              return false;
+          }
+      }
+
+
+      function passValidate()
+      {
+          var fpsw = document.getElementById("si-pw1");
+          var fpswval = fpsw.value;
+          if(fpswval.length<8)
+          {
+              fpsw.className="form-control invalid";
+              //document.getElementById("demo").innerHTML = "Hello JavaScript";
+              return false;
+          }
+          else
+          {
+              fpsw.className="form-control";
+              //document.getElementById("demo").innerHTML = "";
+              return true;
+          }
+      }
+
+      function passMatch()
+      {
+          var ps1 = document.getElementById("si-pw1");
+          var ps2 = document.getElementById("si-pw2");
+          var ps2val = ps2.value;
+          if(ps1.value!=ps2val || ps2val.length<8)
+          {
+              ps2.className="form-control invalid";
+              return false;
+          }
+          else
+          {
+              ps2.className="form-control";
+              return true;
+          }
+      }
+
+      function phoneValidate()
+      {
+          var ph = document.getElementById("si-ph");
+          var phval = ph.value;
+          if(phval.length==10 && (/^\d{10}$/.test(phval)))
+          {
+              ph.className="form-control";
+              return true;
+          }
+          else
+          {
+              ph.className="form-control invalid";
+              return false;
+          }
+      }
+
+      function checkemail()
+      {
+          var em = document.getElementById( "si-em" );
+          var email = em.value;
+          if(email!='')
+          {
+              $.ajax({
+                  type: 'POST',
+                  url: 'phpfunc.php',
+                  data: {
+                      'user_email':email
+                  },
+                  success: function(response) {
+                      var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                      if(response=="OK" && pattern.test(email))
+                      {
+                          $("#si-em").attr('class', 'form-control');
+                          $( '#ems' ).html(response);
+                          cm=true;
+                          return true;
+                      }
+                      else if(response!="OK" && pattern.test(email))
+                      {
+                          $("#si-em").attr('class', 'form-control invalid');
+                          $( '#ems' ).html('This email already exists!');
+                          cm=false;
+                          return false;
+                      }
+                      else
+                      {
+                          $("#si-em").attr('class', 'form-control invalid');
+                          $( '#ems' ).html('Incorrect email format!');
+                          cm=false;
+                          return false;
+                      }
+                  }
+
+              });
+          }
+          else
+          {
+              $("#si-em").attr('class', 'form-control invalid');
+              $( '#ems' ).html('');
+              cm=false;
+              return false;
+          }
+      }
+
+      function ajaxcalltimer()
+      {
+          if (ajaxCallTimeoutID != null)
+              clearTimeout(ajaxCallTimeoutID);
+          ajaxCallTimeoutID = setTimeout(checkemail, 1000);
+
+      }
+
+
+      function checkAll()
+      {
+          if(passValidate() && passMatch() && phoneValidate() && cm)
+          {
+              document.regform.submit();
+              return true;
+          }
+          else
+          {
+              alert("Details not valid!");
+              return false;
+          }
+
+      }
+  </script>
+
 
        </body>
        </html>
 
-<script>
-   function unValidate(un)
-   {
-       var unval = un.value;
-       if(/^[a-z''A-Z]+$/.test(unval) && unval.indexOf(" ")!=unval.length-1 && unval.indexOf(" ")!=0 && unval.length>1)
-       {
-           un.className="form-control";
-           return true;
-       }
-       else
-       {
-           un.className="form-control invalid";
-           return false;
-       }
-   }
-
-
-   function passValidate()
-   {
-       var fpsw = document.getElementById("si-pw1");
-       var fpswval = fpsw.value;
-       if(fpswval.length<8)
-       {
-           fpsw.className="form-control invalid";
-           //document.getElementById("demo").innerHTML = "Hello JavaScript";
-           return false;
-       }
-       else
-       {
-           fpsw.className="form-control";
-           //document.getElementById("demo").innerHTML = "";
-           return true;
-       }
-   }
-
-   function passMatch()
-   {
-       var ps1 = document.getElementById("si-pw1");
-       var ps2 = document.getElementById("si-pw2");
-       var ps2val = ps2.value;
-       if(ps1.value!=ps2val || ps2val.length<8)
-       {
-           ps2.className="form-control invalid";
-           return false;
-       }
-       else
-       {
-           ps2.className="form-control";
-           return true;
-       }
-   }
-
-   function phoneValidate()
-   {
-       var ph = document.getElementById("si-ph");
-       var phval = ph.value;
-       if(phval.length==10 && (/^\d{10}$/.test(phval)))
-       {
-           ph.className="form-control";
-           return true;
-       }
-       else
-       {
-           ph.className="form-control invalid";
-           return false;
-       }
-   }
-
-   function checkAll()
-   {
-       if(passValidate() && passMatch() && phoneValidate())
-       {
-           document.regform.submit();
-           return true;
-       }
-       else
-       {
-           alert("Details not valid!");
-           return false;
-       }
-
-   }
-</script>
