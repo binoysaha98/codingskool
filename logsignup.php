@@ -15,6 +15,7 @@
 html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 body{
 	min-height:700px;
+	margin-bottom:120px;
 }
 .invalid {
     border: 1px solid red;
@@ -50,7 +51,7 @@ body{
    <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
     <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
     <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account"><img src="/w3images/avatar2.png" class="w3-circle" style="height:25px;width:25px" alt="Avatar"></a>
+    
    </div>
   </div>
 
@@ -67,7 +68,17 @@ body{
 
 
 <?php
-include_once "dbconnect.php";
+
+$bd=mysqli_connect("localhost","root","");
+if(!$bd)
+{
+    die('oops connection problem ! --> '.mysqli_error());
+}
+if(!mysqli_select_db($bd,"hackathon"))
+{
+    die('oops database selection problem ! --> '.mysqli_error());
+}
+
 if((isset($_POST['btn_login'])))
 {
    $login_id = $_POST['l-email'];
