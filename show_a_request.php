@@ -1,19 +1,6 @@
+
 <?php
-	session_start();
-		$id="";
-  $name="";
- if(empty($_SESSION['name']))
- {
-   $name="Login/Register";
- }
- else {
-   $name=$_SESSION['name'];
-  
- }
- if(!empty($_SESSION['id']))
-{
-   $id=$_SESSION['id'];
- }
+
 	$conn = mysqli_connect('localhost','root','','hackathon');
 	if(!$conn)
 	{
@@ -21,25 +8,19 @@
 		
 	}
 	else{
-		$sql = "describe profile";
+		$data_i = $_GET['id'];
+		$sql = "SELECT requests.r_skills,requests.r_points,requests.r_desc,requests.u_id,user.name FROM requests INNER JOIN user on requests.u_id = user.id where requests.r_id=".$data_i;
 		$result = mysqli_query($conn,$sql);
 		$data = array();
 		$count = 0;
 		while ( $row = mysqli_fetch_assoc($result))
 		{
-		
-			if($count != 0)
-			{
-				$data[] = $row['Field'];
-			}
-			$count = 1;
+			$data[] = $row;
 		}
-	
 	}
 	
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <title>W3.CSS Template</title>
@@ -59,18 +40,6 @@ footer{
 	left:0px;
 	right:0px;
 }
-.position-req{
-		position:fixed;
-		top:100px;
-		width:80%;
-		left:50%;
-		-webkit-transform:translateX(-50%);
-		-o-transform: translateX(-50%);
-		transform: translateX(-50%);
-}
-.hidden{
-		display:none;
-}
 </style>
 <body class="w3-theme-l5">
 
@@ -79,8 +48,7 @@ footer{
  <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
   <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
   <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
-  <a href="profile.php" class="w3-bar-item w3-button w3-padding-large">Profile</a>
-  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account"><?php echo $name; ?></a>
+  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">ADMIN</a>
  </div>
 </div>
 
@@ -93,7 +61,7 @@ footer{
 </div>
 
 <!-- Page Container -->
-<div class="w3-container w3-content" style="margin-bottom:100px;max-width:1400px;margin-top:80px;min-height:450px;">    
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px;min-height:450px;">    
   <!-- The Grid -->
   <div class="w3-row">
 	<div class="w3-col m2">
@@ -103,23 +71,26 @@ footer{
       </div>
 	</div>
 	<div class="w3-col m8">
-		<h2 style="margin-bottom:20px;">Add Skills</h2> 
+		<div class="w3-card-2 w3-round w3-white" style="padding-top:5px">
+        
+		<h2 class="request-header" style="margin-bottom:20px;margin-left:10px;">Request from </h2>
+		<h3 class="request-description" style="margin-bottom:20px;margin-left:10px;">Description<br></h3>
+			  
 		<table class="table table-striped">
     <thead>
       <tr>
-        <th></th>
-        <th>Skills</th>
-		<th>Points</th>
+        <th><center>Skill</center></th>
+        <th><center>Requested Points</center></th>
+		<th>Grant Points</th>
       </tr>
     </thead>
     <tbody>
     </tbody>
   </table>
-  
-		<h2 style="margin-bottom:20px;">Add description</h2> 
-		
-  <textarea id="desc" class="form-control" rows="5" id="comment"></textarea>
-  <button id="submit-form" type="button" class="btn btn-primary" style="margin-top:20px;">Make Request</button>
+	<button type='button' class='btn btn-primary' id="accept" style="margin:10px;margin-left:35px;">Accept</button>
+	<button type='button' class='btn btn-primary' id="reject" style="margin:10px;margin-left:0px;">Reject</button>
+	
+		</div>
 	</div>
   <!-- End Grid -->
   </div>
@@ -127,9 +98,7 @@ footer{
 <!-- End Page Container -->
 </div>
 <br>
-<div id="alert-msg" class="alert alert-success hidden position-req">
-  <strong>Success!</strong> You successfully registered a request.
-</div>
+
 <!-- Footer -->
 <footer class="w3-container w3-theme-d3 w3-padding-16" id="first-footer">
   <h5>Copyright content</h5>
@@ -141,6 +110,76 @@ footer{
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+	
+	$("#accept").click(function(){
+		var points_a = [];
+		var str_points = "";
+		$("input[type='text']").each(function (index, value) { 
+			points_a.push($(this).val());
+		});
+		var r_id = '<?php echo json_encode($data_i) ?>';
+	var str_points = points_a.join("|");	
+	
+        $.ajax({
+            type: 'POST',
+            url: 'addresponse.php',
+            data: {
+                'points': str_points,
+				'r_id':r_id
+                
+            },
+            success: function(resp) {
+				
+            }
+        });
+		window.location.href = "check_requests.php";
+	});
+	$("#reject").click(function(){
+		$.ajax({
+            type: 'POST',
+            url: 'addresponse.php',
+            data: {
+                'r_id':r_id
+            },
+            success: function(resp) {
+                
+            }
+        });
+		window.location.href = "check_requests.php";
+	});
+	
+	 var data = '<?php echo json_encode($data) ?>';
+    var parsable_data = JSON.parse(data);
+	
+	var skills = parsable_data[0]['r_skills'];
+	var points = parsable_data[0]['r_points'];
+	var skills_arr = [];
+	var points_arr = [];
+	var skills_arr = skills.split("|");
+    var points_arr = points.split("|");
+        // Display array values on page
+        for(var i = 0; i < skills_arr.length; i++){
+            $("tbody").append("<tr></tr>");
+			$("tbody tr:last").append("<td><center>"+skills_arr[i]+"</center></td>");
+			$("tbody tr:last").append("<td><center>"+points_arr[i]+"</center></td>");
+			$("tbody tr:last").append("<td><input type='text' class='form-control' style='max-width:200px' id="+(i+1)+"></td>");
+			
+        }
+		
+	$(".request-header").append(parsable_data[0]['name']);
+	if(parsable_data[0]['r_desc'] == '')
+	{
+		$(".request-description").append("<h5>No Description</h5>");
+	}
+	else{
+		
+	$(".request-description").append("<h5>"+parsable_data[0]['r_desc']+"</h5>");
+	}
+	
+	
+	
+</script>
 
 <script>
 // Accordion
@@ -166,61 +205,6 @@ function openNav() {
     }
 }
 </script>
-<script>
-	
-    var data = '<?php echo json_encode($data) ?>';
-    var parsable_data = JSON.parse(data);
 
-    for(i=0;i<parsable_data.length;i++)
-    {
-		
-		$("tbody").append("<tr></tr>");
-		$("tbody tr:last").append("<td><input type='checkbox' value='' name="+(i+1)+"></td>");
-		$("tbody tr:last").append("<td style='min-width:200px;' id="+"skill_"+(i+1)+">"+parsable_data[i]+"</td>");
-		$("tbody tr:last").append("<td><input style='max-width:150px'; type='text' class='form-control' id="+(i+1)+"></td>");
-	}
-</script>
-<script>
-
-	$("#submit-form").click(function(){
-		
-			getrequest();
-	});
-    function getrequest() {
-		var arr_points = [];
-		var arr_skills = [];
-        $('input:checkbox:checked').map(function () {
-            var name = this.name;
-			arr_points.push($("#"+name).val());
-			arr_skills.push($("#skill_"+name).text());
-			
-        }).get(); // ["18", "55", "10"]
-        var str_skills = arr_skills.join("|");
-        var str_points = arr_points.join("|");
-		
-        var desc = $('#desc').val();
-
-        $.ajax({
-            type: 'POST',
-            url: 'phpfunc.php',
-            data: {
-                'skills': str_skills,
-                'points': str_points,
-                'desc': desc
-            },
-            success: function(resp) {
-                if(resp)
-                {
-					$("#alert-msg").removeClass('hidden');
-					setTimeout(function(){
-						
-						$("#alert-msg").addClass('hidden');
-					},3000);
-                }
-            }
-        });
-    }
-    
-</script>
 </body>
 </html> 

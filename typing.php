@@ -119,14 +119,17 @@ user-select: none;
 		<div class="w3-card-2 w3-round w3-white">
         
 			  <div class="jumbotron" style="padding:20px">
-				<h2>Typing Test</h2> 
-				<h2>Type the following paragraph</h2> 
+				<h3>Typing Test</h3> 
+				
+					<button id="start-test" type="button" class="btn btn-primary pull-right" style="margin-top:10px;background-color:#4d636f">Start Test</button>
+				<h3>Type the following paragraph</h3> 
 				<p class="to-type">Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile-first projects on the web.</p> 
 				<form>
 					<div class="form-group">
 					  <textarea class="form-control" rows="5" id="typed"></textarea>
 						
-						<button type="button" class="btn btn-primary" style="margin-top:10px;background-color:#4d636f">Submit</button>
+						<button id="submit" type="button" class="btn btn-primary" style="margin-top:10px;background-color:#4d636f">Submit</button>
+						
 						
 					</div>
 					
@@ -167,7 +170,14 @@ user-select: none;
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <script>
-// set the date we're counting down to
+var interval;
+$("#submit").click(function(){
+	
+	clearInterval(interval);
+	getSpeed();
+});
+$("#start-test").click(function(){
+		// set the date we're counting down to
 var target_date = new Date().getTime() + (3000 * 60);
  
 // variables for time units
@@ -177,7 +187,7 @@ var days, hours, minutes, seconds;
 var countdown = document.getElementById('countdown');
  var count = 1;
 // update the tag with id "countdown" every 1 second
- var interval = setInterval(function () {
+ interval = setInterval(function () {
 	count++;
     // find the amount of "seconds" between now and target
     var current_date = new Date().getTime();
@@ -201,6 +211,9 @@ var countdown = document.getElementById('countdown');
 	}
 }, 1000);
 
+	
+});
+
 function getSpeed(){
 	var number_of_words = $("#typed").val();
 	var wpm = number_of_words.split(" ");
@@ -210,7 +223,7 @@ function getSpeed(){
 		$(".speed").append("Your speed is "+ wpm.length);
 	}
 	else{
-		$(".speed").append("There was a typo");
+		$(".speed").append("<p><center>There was a typo</center></p>");
 	}
 		
 }

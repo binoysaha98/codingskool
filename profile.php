@@ -7,12 +7,37 @@
  }
  else {
    $name=$_SESSION['name'];
+  
  }
  if(!empty($_SESSION['id']))
 {
    $id=$_SESSION['id'];
  }
-	?>
+$conn = mysqli_connect('localhost','root','','hackathon');
+				if(!$conn)
+				{
+					die('connection error'. mysqli_connect_error());
+					
+				}
+				else
+				{
+					
+
+if( isset($_SESSION['id']))
+{
+	$id=$_SESSION['id'];
+    $qry = mysqli_query($conn,"SELECT * FROM profile where userid='".$id."'");
+    $data = array();
+		$count = 0;
+		while ( $row = mysqli_fetch_assoc($qry))
+		{
+			$data[] = $row;
+		}
+}
+	}
+
+?>
+	
 <!DOCTYPE html>
 <html>
 <title>W3.CSS Template</title>
@@ -58,7 +83,8 @@ body{
  <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
   <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
   <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
-  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account"><img src="/w3images/avatar2.png" class="w3-circle" style="height:25px;width:25px" alt="Avatar"></a>
+  <a href="pending_requests.php" class="w3-bar-item w3-button w3-padding-large">Requests</a>
+  <a href="#" id="my-account" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account"><?php echo $name;?></a>
  </div>
 </div>
 
@@ -74,13 +100,20 @@ body{
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px;min-height:450px;">
   <!-- The Grid -->
   <div class="w3-row">
+	<div class="w3-col m1">
+		<div class="w3-card-2 w3-round w3-white">
+        <div class="w3-container">
+		</div>
+		</div>
+	</div>
+  
     <!-- Left Column -->
     <div class="w3-col m3">
       <!-- Profile -->
       <div class="w3-card-2 w3-round w3-white">
         <div class="w3-container">
          <h4 class="w3-center">My Profile</h4>
-         <p class="w3-center"><img src="/w3images/avatar3.png" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+         <p class="w3-center"><?php echo $name;?></p>
          <hr>
          <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
          <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> London, UK</p>
@@ -100,23 +133,23 @@ body{
 		Levels<br>
 		0 &nbsp;&nbsp;|&nbsp;&nbsp;  1&nbsp;&nbsp;  |&nbsp;&nbsp;  2&nbsp;&nbsp;  |&nbsp;&nbsp;  3
 		</th>
-        <th>Description</th>
+        <th>Points</th>
 		<th>Update</th>
       </tr>
     </thead>
     <tbody>
-       <tr>
+      <!-- <tr>
         <td>Logical Thinking</td>
         <td><i class="fa fa-times" aria-hidden="true" ></i> &nbsp;&nbsp; |&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true" ></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true"></i></td>
         <td>Logical</td>
-		<td><button type="button" class="btn btn-primary">Primary</button></td>
+		<td><button type="button" class="btn btn-primary">Update</button></td>
       </tr>
 	  <tr>
         <td>Logical Thinking</td>
         <td><i class="fa fa-times" aria-hidden="true" ></i> &nbsp;&nbsp; |&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true" ></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true"></i></td>
         <td>Logical</td>
-		<td><button type="button" class="btn btn-primary">Primary</button></td>
-      </tr>
+		<td><button type="button" class="btn btn-primary">Update</button></td>
+      </tr>-->
     </tbody>
   </table>
 
@@ -138,6 +171,26 @@ body{
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+	$("table").on('click','.make-request',function(){
+		
+		window.location.href = "make_request.php";
+	});
+    var data = '<?php echo json_encode($data) ?>';
+	
+    var parsable_data = JSON.parse(data);
+	Object.keys(parsable_data[0]).forEach(function(key,index) {
+		
+		if(parsable_data[0][key] !== null && key != 'userid') {
+			$("tbody").append('<tr></tr>');
+			$("tbody tr:last").append('<td>'+key+'</td>');
+			$("tbody tr:last").append('<td><i class="fa fa-check" aria-hidden="true" ></i> &nbsp;&nbsp; |&nbsp;&nbsp;<i class="fa fa-check" aria-hidden="true" ></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i>&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i></td>');
+			$("tbody tr:last").append('<td>'+parsable_data[0][key]+'</td>');
+			$("tbody tr:last").append('<td><button type="button" class="make-request btn btn-primary" >Make Request</button></td>');
+		}
+});
+	
+</script>
 <script>
 // Accordion
 function myFunction(id) {
