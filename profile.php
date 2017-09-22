@@ -1,18 +1,38 @@
 <?php session_start();
+include "dbconnect.php";
 	$id="";
   $name="";
  if(empty($_SESSION['name']))
  {
-   $name="Login/Register";
+     header("Location: logsignup.php");
  }
- else {
-   $name=$_SESSION['name'];
- }
+
  if(!empty($_SESSION['id']))
 {
    $id=$_SESSION['id'];
  }
-	?>
+
+ if(isset($_POST['linksub']))
+ {
+     $git = $_POST['gitlog'];
+     $stack = $_POST['stacklog'];
+     $hack = $_POST['hacklog'];
+     $query = mysqli_query($bd,"UPDATE user SET github='$git', stackoverflow='$stack', hackerrank='$hack' WHERE id='$id'");
+     if($query)
+     {?>
+         <script>
+             alert("Successful");
+             window.location.href='profile.php';
+         </script>
+         <?php
+     }
+     else
+     {?>
+         <script>alert("Unsuccessful")</script>
+         <?php
+     }
+ }
+ ?>
 <!DOCTYPE html>
 <html>
 <title>W3.CSS Template</title>
@@ -91,8 +111,9 @@ body{
 
     <!-- End Left Column -->
     </div>
-    <div class="w3-col m7 w3-card-2" style="margin-left:20px;overflow:hidden;">
-  <table class="table table-striped" >
+    <div class="w3-col m7">
+        <div class="w3-card-2" style="margin-left:20px;overflow:hidden;">
+  <table class="table table-striped" style="position: relative; margin: auto" >
     <thead>
       <tr>
         <th>Skills</th>
@@ -119,17 +140,34 @@ body{
       </tr>
     </tbody>
   </table>
-
+        </div>
+    </div>
+        <div class="w3-row">
+            <!-- Left Column -->
+            <div class="w3-col m3">
+                <div class="w3-container">
+                    <h2>Link To</h2>
+                    <form method="post">
+                        <label>GitHub</label><br>
+                        <input type="text" name="gitlog"><br><br>
+                        <label>StackOverflow</label><br>
+                        <input type="text" name="stacklog"><br><br>
+                        <label>HackerRank</label><br>
+                        <input type="text" name="hacklog"><br><br>
+                        <button type="submit" name="linksub">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
 
   <!-- End Grid -->
-  </div>
 
 <!-- End Page Container -->
 </div>
 <br>
-
+<?php //include 'githubconf.php' ?>
 <?php include 'footer.php' ?>
 
 
@@ -138,6 +176,7 @@ body{
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type='text/javascript' src='https://api.stackexchange.com/js/2.0/all.js'></script>
 <script>
 // Accordion
 function myFunction(id) {
@@ -161,7 +200,78 @@ function openNav() {
         x.className = x.className.replace(" w3-show", "");
     }
 }
+
+
+    SE.init({
+        clientId: 10894,
+        key: 'uDyzTmSttYL8P4beLwvYQA((',
+        channelUrl: 'https://api.stackexchange.com/docs/proxy',
+        complete: function (data) {
+        }
+    });
+
+
+function stackauth()
+{
+    SE.authenticate({
+        success: function(data) {
+            alert(
+                'User Authorized with account id = ' +
+                data.networkUsers[0].account_id + ', got access token = ' +
+                data.accessToken
+            );
+        },
+        error: function(data) {
+            alert('An error occurred:\n' + data.errorName + '\n' + data.errorMessage);
+        },
+
+        networkUsers: true
+    });
+}
 </script>
+
+<script src="https://www.gstatic.com/firebasejs/4.4.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyDLZqJxZ3enEbDMkNvgwqLSio_5EFJPgKI",
+        authDomain: "codeskool-edd7f.firebaseapp.com",
+        databaseURL: "https://codeskool-edd7f.firebaseio.com",
+        projectId: "codeskool-edd7f",
+        storageBucket: "",
+        messagingSenderId: "945810653935"
+    };
+    firebase.initializeApp(config);
+</script>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase-messaging.js"></script>
+<script>
+    function git() {
+        provider.addScope('repo');
+        provider.setCustomParameters({
+            'allow_signup': 'false'
+        });
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+            // ...
+        }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+        });
+    }
+</script>
+
 
 </body>
 </html>

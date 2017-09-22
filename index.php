@@ -1,19 +1,4 @@
 <?php session_start();
-	$id="";
-  $name="";
-echo $_SESSION['name'];
-echo $_SESSION['id'];
- if(empty($_SESSION['name']))
- {
-   $name="Login/Register";
- }
- else {
-   $name=$_SESSION['name'];
- }
- if(!empty($_SESSION['id']))
-{
-   $id=$_SESSION['id'];
- }
 	?>
 <!DOCTYPE html>
 <html>
@@ -63,7 +48,19 @@ body{
   <a href="#" class="w3-bar-item w3-button w3-padding-large">Profile</a>
   <a href="#" class="w3-bar-item w3-button w3-padding-large">Learning</a>
   <a href="#" class="w3-bar-item w3-button w3-padding-large">About</a>
-  <a href="logsignup.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account"><?php echo $name;?></a>
+      <?php
+      if(isset($_SESSION['name']))
+      {?>
+          <a href="profile.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+              <?php echo $_SESSION['name']; ?>
+          </a><?php
+      }
+      else
+      {?>
+          <a href="logsignup.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+              Sign In/Up
+          </a><?php
+      }?>
 </div>
 </div>
 
