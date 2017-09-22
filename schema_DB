@@ -1,5 +1,5 @@
-database : cool
 
+database : cool
 table : profile
 CREATE TABLE `profile` (
   `userid` int(11) DEFAULT NULL,
@@ -24,7 +24,6 @@ CREATE TABLE `profile` (
   `manrating` int(11) DEFAULT NULL,
   `level` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
-
 
 table : user
 CREATE TABLE `user` (
