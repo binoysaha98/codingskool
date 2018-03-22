@@ -1,3 +1,1 @@
-# codingskool
-hackathon 2017
-# Cancelled
+Hackathon 2017
